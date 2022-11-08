@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.9;
+import "./Ride.sol";
 
-contract Register {
+contract Infra {
     //// define roles ////
     enum roles {
         rider,
@@ -13,6 +14,9 @@ contract Register {
         free,
         busy
     }
+    //// Inits ////
+    bytes32 constant NULL = "";
+    address[] driversArray;
     //// define rider struct ////
     struct riderStruct {
         bytes32 name;
@@ -37,7 +41,12 @@ contract Register {
     //// Events ////
     event RiderRegister(address indexed _address, bytes32 name);
     event DriverRegister(address indexed _address, bytes32 name);
-    
+    event requestDriverEvent(
+        address payable _riderAddr,
+        address payable _driverAddr,
+        address rideAddr
+    );
+
     //// Constructor ////
     constructor() {}
 
@@ -90,5 +99,69 @@ contract Register {
         driversMapping[_driverAddr].driverAddr = _driverAddr;
 
         emit DriverRegister(_driverAddr, _name);
+    }
+
+    function getRiderInfo(address payable _riderAddr)
+        external
+        view
+        returns (riderStruct memory _riderStruct)
+    {
+        return ridersMapping[_riderAddr];
+    }
+
+    function cancelRide(address payable _riderAddr) public returns (bool) {
+        uint len = ridersMapping[_riderAddr].rides.length;
+        delete ridersMapping[_riderAddr].rides[len - 1];
+        return true;
+    }
+
+    function getDriverInfo(address payable _driverAddr)
+        external
+        view
+        returns (driverStruct memory _driverStruct)
+    {
+        return driversMapping[_driverAddr];
+    }
+
+    function updateDriverStatus(address payable _driverAddr, uint _status)
+        external
+    {
+        driversMapping[_driverAddr].status = currentStatus(_status);
+    }
+
+    function updateRideInformation(address _driverAddr, address _rideAddr)
+        external
+    {
+        ridersMapping[_driverAddr].rides.push(_rideAddr);
+    }
+
+    function requestRide(
+        address payable _riderAddr,
+        string[] memory _fromAddr,
+        string[] memory _toAddr,
+        bytes32 _amount
+    ) public returns (address) {
+        Ride ride = new Ride(
+            _riderAddr,
+            payable(address(0)),
+            _fromAddr,
+            _toAddr,
+            _amount
+        );
+        ridersMapping[_riderAddr].rides.push(address(ride));
+
+        return address(ride);
+    }
+
+    function returnDriversAvailable() external view returns (address[] memory) {
+        return driversArray;
+    }
+
+    function requestDriver(
+        address payable _riderAddr,
+        address payable _driverAddr,
+        address _rideAddr
+    ) external {
+        emit requestDriverEvent(_riderAddr, _driverAddr, _rideAddr);
     }
 }
