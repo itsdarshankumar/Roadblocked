@@ -32,36 +32,36 @@ Roadblocked was built with hardwork and a little help from:
 
 Before Starting the project, install the 
 * npm
-  sh
+  ```sh
   nvm install npm 16.13.0
-  
+  ```
 
 ### Installation
 
 1. Clone the repo
-   sh
+   ```sh
    git clone https://github.com/itsdarshankumar/Roadblocked.git
-   
+   ```
 2. Install NPM packages
-   sh
+   ```sh
    npm install
-   
+   ```
 3. make .env file and enter Avalanche details
-	sh
+	```sh
 	touch .env
-	
+	```
 4. Now change the directory to client
-	sh
+	```sh
 	cd client
-	
+	```
 5. Install NPM packages
-   sh
-   npm install
-   
+    ```sh
+    npm install
+   ```
 6. start the react server 
-   sh
+   ```sh
    npm start
-   
+   ```
 
 
 ## Group 1
